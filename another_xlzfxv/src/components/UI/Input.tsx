@@ -3,10 +3,11 @@ import React, { InputHTMLAttributes } from 'react';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  helperText?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className, ...props }, ref) => {
+  ({ label, error, helperText, className, ...props }, ref) => {
     return (
       <div className="relative">
         <label htmlFor={props.id || props.name} className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
@@ -23,6 +24,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p className="mt-1 text-sm text-red-500" role="alert">
             {error}
+          </p>
+        )}
+        {helperText && !error && (
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {helperText}
           </p>
         )}
       </div>

@@ -17,6 +17,8 @@ export interface Mission {
   contraintes?: string;
   kpis?: string;
   outils?: string;
+  status?: 'in_progress' | 'completed';
+  report_path?: string;
 }
 
 export interface CreateMissionData {

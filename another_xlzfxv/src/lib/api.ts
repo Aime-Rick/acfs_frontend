@@ -121,6 +121,48 @@ class ApiService {
     });
   }
 
+  // Get missions with pagination
+  async getUserMissionsPaginated(userId: string, page: number = 1, limit: number = 10) {
+    return this.request(`/users/${userId}/missions?page=${page}&limit=${limit}`);
+  }
+
+  // Download report
+  async downloadReport(reportPath: string) {
+    const url = `${this.baseUrl}/report/download`;
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          remote_file_path: reportPath,
+          local_file_path: `downloads/${reportPath.split('/').pop()}`
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Create blob and download
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = reportPath.split('/').pop() || 'report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      return { status: 'success', message: 'Report downloaded successfully' };
+    } catch (error) {
+      console.error('Download failed:', error);
+      throw error;
+    }
+  }
   // Research endpoint
   async deepResearch(context: string, problematique: string, objectives: string, missionName: string) {
     return this.request('/research', {

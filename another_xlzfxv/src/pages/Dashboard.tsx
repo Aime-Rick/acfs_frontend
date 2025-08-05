@@ -6,28 +6,47 @@ import { useAuth } from '../contexts/AuthContext';
 import { Mission } from '../types';
 import Button from '../components/UI/Button';
 import Modal from '../components/UI/Modal';
+import Pagination from '../components/UI/Pagination';
 import CreateMissionModal from '../components/Missions/CreateMissionModal';
+import MissionDetailsModal from '../components/Missions/MissionDetailsModal';
 import MissionCard from '../components/Missions/MissionCard';
 import toast from 'react-hot-toast';
 
 const Dashboard: React.FC = () => {
   const [missions, setMissions] = useState<Mission[]>([]);
+  const [totalMissions, setTotalMissions] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
-      fetchMissions();
+      fetchMissions(currentPage);
     }
-  }, [user]);
+  }, [user, currentPage]);
 
-  const fetchMissions = async () => {
+  const fetchMissions = async (page: number = 1) => {
+    setLoading(true);
     try {
+      // For now, we'll use the existing endpoint and implement client-side pagination
+      // In a real implementation, you'd want server-side pagination
       const response = await apiService.getUserMissions(user?.id || '');
       if (response.status === 'success') {
-        setMissions(response.data || []);
+        const allMissions = response.data || [];
+        setTotalMissions(allMissions.length);
+        setTotalPages(Math.ceil(allMissions.length / itemsPerPage));
+        
+        // Client-side pagination
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        setMissions(allMissions.slice(startIndex, endIndex));
       } else {
         throw new Error(response.message || 'Failed to fetch missions');
       }
@@ -40,11 +59,61 @@ const Dashboard: React.FC = () => {
   };
 
   const handleMissionCreated = (newMission: Mission) => {
-    setMissions([newMission, ...missions]);
+    // Refresh the missions list to get updated pagination
+    fetchMissions(1);
+    setCurrentPage(1);
     setShowCreateModal(false);
     toast.success('Mission créée avec succès !');
   };
 
+  const handleViewMission = (mission: Mission) => {
+    setSelectedMission(mission);
+    setShowDetailsModal(true);
+  };
+
+  const handleDeleteMission = async (missionId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette mission ?')) {
+      return;
+    }
+
+    setDeleteLoading(missionId);
+    try {
+      const response = await apiService.deleteMission(missionId);
+      if (response.status === 'success') {
+        toast.success('Mission supprimée avec succès !');
+        // Refresh missions and adjust page if necessary
+        const newTotalMissions = totalMissions - 1;
+        const newTotalPages = Math.ceil(newTotalMissions / itemsPerPage);
+        
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+          setCurrentPage(newTotalPages);
+        } else {
+          fetchMissions(currentPage);
+        }
+      } else {
+        throw new Error(response.message || 'Failed to delete mission');
+      }
+    } catch (error: any) {
+      toast.error('Erreur lors de la suppression de la mission');
+      console.error('Error deleting mission:', error);
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  const handleDownloadReport = async (reportPath: string) => {
+    try {
+      await apiService.downloadReport(reportPath);
+      toast.success('Téléchargement du rapport en cours...');
+    } catch (error: any) {
+      toast.error('Erreur lors du téléchargement du rapport');
+      console.error('Error downloading report:', error);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   const filteredMissions = missions.filter(mission =>
     mission.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     mission.context?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,7 +162,7 @@ const Dashboard: React.FC = () => {
                 Total Missions
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {missions.length}
+                {totalMissions}
               </p>
             </div>
           </div>
@@ -137,10 +206,10 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                En cours
+                Terminées
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {missions.length}
+                {missions.filter(m => m.report_path).length}
               </p>
             </div>
           </div>
@@ -164,15 +233,15 @@ const Dashboard: React.FC = () => {
         <div className="text-center py-12">
           <Target className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            {missions.length === 0 ? 'Aucune mission' : 'Aucun résultat'}
+            {totalMissions === 0 ? 'Aucune mission' : 'Aucun résultat'}
           </h3>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            {missions.length === 0 
+            {totalMissions === 0 
               ? 'Créez votre première mission pour commencer'
               : 'Essayez de modifier votre recherche'
             }
           </p>
-          {missions.length === 0 && (
+          {totalMissions === 0 && (
             <Button onClick={() => setShowCreateModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Créer une mission
@@ -180,14 +249,30 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMissions.map((mission, index) => (
-            <MissionCard
-              key={mission.id}
-              mission={mission}
-              index={index}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMissions.map((mission, index) => (
+              <MissionCard
+                key={mission.id}
+                mission={mission}
+                index={index}
+                onView={handleViewMission}
+                onDelete={handleDeleteMission}
+                onDownloadReport={handleDownloadReport}
+              />
+            ))}
+          </div>
+          
+          {/* Pagination */}
+          {!searchTerm && totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalItems={totalMissions}
+              itemsPerPage={itemsPerPage}
             />
-          ))}
+          )}
         </div>
       )}
 
@@ -202,6 +287,21 @@ const Dashboard: React.FC = () => {
           onMissionCreated={handleMissionCreated}
           onClose={() => setShowCreateModal(false)}
         />
+      </Modal>
+
+      {/* Mission Details Modal */}
+      <Modal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        title="Détails de la mission"
+        size="xl"
+      >
+        {selectedMission && (
+          <MissionDetailsModal
+            mission={selectedMission}
+            onDownloadReport={handleDownloadReport}
+          />
+        )}
       </Modal>
     </div>
   );
