@@ -86,40 +86,46 @@ const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
         <div className="space-y-6">
           {/* Context */}
           {mission.context && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <FileText className="w-5 h-5 text-blue-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Contexte</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                {mission.context}
-              </p>
+              <div className="flex-1 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {mission.context}
+                </p>
+              </div>
             </div>
           )}
 
           {/* Objective */}
           {mission.objectif && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <Target className="w-5 h-5 text-green-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Objectif</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                {mission.objectif}
-              </p>
+              <div className="flex-1 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {mission.objectif}
+                </p>
+              </div>
             </div>
           )}
 
           {/* Problem */}
           {mission.problem && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-red-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Problématique</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                {mission.problem}
-              </p>
+              <div className="flex-1 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {mission.problem}
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -128,71 +134,79 @@ const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
         <div className="space-y-6">
           {/* Form Information */}
           {mission.form_id && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <Hash className="w-5 h-5 text-purple-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Formulaire</h3>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">ID du formulaire:</span>
-                  <code className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">
-                    {mission.form_id}
-                  </code>
-                </div>
-                {mission.form_url && (
+              <div className="flex-1 overflow-y-auto">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Lien:</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => window.open(mission.form_url, '_blank')}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-1" />
-                      Ouvrir
-                    </Button>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">ID du formulaire:</span>
+                    <code className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">
+                      {mission.form_id}
+                    </code>
                   </div>
-                )}
+                  {mission.form_url && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Lien:</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.open(mission.form_url, '_blank')}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        Ouvrir
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
 
           {/* KPIs */}
           {mission.kpis && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <Target className="w-5 h-5 text-indigo-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">KPIs</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                {mission.kpis}
-              </p>
+              <div className="flex-1 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {mission.kpis}
+                </p>
+              </div>
             </div>
           )}
 
           {/* Tools */}
           {mission.outils && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <FileText className="w-5 h-5 text-orange-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Outils</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                {mission.outils}
-              </p>
+              <div className="flex-1 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {mission.outils}
+                </p>
+              </div>
             </div>
           )}
 
           {/* Constraints */}
           {mission.contraintes && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-40 flex flex-col">
+              <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-yellow-500" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Contraintes</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                {mission.contraintes}
-              </p>
+              <div className="flex-1 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {mission.contraintes}
+                </p>
+              </div>
             </div>
           )}
         </div>
