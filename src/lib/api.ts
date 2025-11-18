@@ -217,12 +217,11 @@ class ApiService {
     });
   }
 
-  async sendEmail(toEmails: string[], subject: string, textContent: string) {
+  async sendEmail(toEmails: string[], textContent: string) {
     return this.request('/email/send', {
       method: 'POST',
       body: JSON.stringify({
-        to_emails: toEmails,
-        subject,
+        to_numbers: toEmails,
         text_content: textContent,
       }),
     });

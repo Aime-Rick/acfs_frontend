@@ -146,9 +146,8 @@ const Survey: React.FC = () => {
   };
 
   const validateEmails = (emailString: string): boolean => {
-    const emails = emailString.split(',').map(email => email.trim());
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emails.every(email => emailRegex.test(email));
+    const eam = emailString
+    return true
   };
 
   const sendEmails = async () => {
@@ -158,7 +157,7 @@ const Survey: React.FC = () => {
     }
 
     if (!emailData.recipients || !validateEmails(emailData.recipients)) {
-      toast.error('Veuillez saisir des adresses email valides');
+      toast.error('Veuillez saisir les numéros whatsapp valides');
       return;
     }
 
@@ -169,7 +168,6 @@ const Survey: React.FC = () => {
       
       const response = await apiService.sendEmail(
         emails,
-        emailData.subject,
         messageWithLink
       );
 
@@ -296,16 +294,10 @@ const Survey: React.FC = () => {
           className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700"
         >
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-            Diffusion par email
+            Diffusion par whatsapp
           </h2>
 
           <div className="space-y-6">
-            <Input
-              label="Objet de l'email"
-              value={emailData.subject}
-              onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
-              placeholder="Objet de votre email"
-            />
 
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -343,17 +335,17 @@ const Survey: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Destinataires
+                Numéros
               </label>
               <textarea
                 value={emailData.recipients}
                 onChange={(e) => setEmailData(prev => ({ ...prev, recipients: e.target.value }))}
-                placeholder="email1@example.com, email2@example.com, ..."
+                placeholder="2290152876230, 2290152476420, ..."
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Séparez les adresses email par des virgules
+                Séparez les numéros whatsapp par des virgules
               </p>
             </div>
 
@@ -371,7 +363,7 @@ const Survey: React.FC = () => {
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  Envoyer les emails
+                  Envoyer
                 </>
               )}
             </Button>
@@ -381,7 +373,7 @@ const Survey: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Mail className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                   <p className="text-sm text-yellow-800 dark:text-yellow-400">
-                    Générez d'abord un formulaire pour pouvoir l'envoyer par email
+                    Générez d'abord un formulaire pour pouvoir l'envoyer par whatsapp.
                   </p>
                 </div>
               </div>
